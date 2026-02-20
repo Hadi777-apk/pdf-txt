@@ -111,4 +111,4 @@ MIT License
 
 ## 作者
 
-PDF Text Extractor Team
+hardy
