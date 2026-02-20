@@ -1,0 +1,9 @@
+{
+  "name": "movie-site-proxy",
+  "version": "1.0.0",
+  "description": "Proxy for movie navigation site",
+  "main": "index.html",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}

@@ -1,0 +1,46 @@
+# Default configuration for Website Accessibility Fix Tool
+
+# Logging configuration
+logging:
+  level: INFO
+  console_output: true
+  log_file: logs/accessibility_fix.log
+
+# Network diagnostic settings
+diagnostics:
+  ping_timeout: 5
+  port_scan_timeout: 3
+  traceroute_max_hops: 30
+  dns_timeout: 5
+  retry_attempts: 3
+
+# Server analysis settings
+server:
+  config_backup_dir: backups
+  service_restart_timeout: 30
+  log_analysis_lines: 1000
+
+# Firewall settings
+firewall:
+  backup_rules: true
+  rule_validation_timeout: 10
+  web_ports: [80, 443]
+
+# Testing settings
+testing:
+  test_timeout: 30
+  load_test_connections: 10
+  test_retry_attempts: 3
+  external_test_sources: []
+
+# Security settings
+security:
+  scan_timeout: 60
+  vulnerability_check: true
+  security_audit: true
+
+# Monitoring settings
+monitoring:
+  check_interval: 300  # 5 minutes
+  alert_threshold: 3
+  documentation_dir: docs

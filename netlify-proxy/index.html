@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZYY 的专属影视空间</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 { 
+            color: white; 
+            margin-bottom: 20px; 
+            font-size: 2.5em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .emoji { font-size: 3em; margin-bottom: 20px; }
+        p { 
+            color: rgba(255, 255, 255, 0.9); 
+            margin-bottom: 30px; 
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(238, 90, 36, 0.6);
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .content {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">🐱🎀</div>
+        <h1>Hi, ZYY ❤️</h1>
+        <p>为你精选的影视宝库</p>
+        <button class="btn" onclick="loadContent()">进入影视空间</button>
+        
+        <div class="loading" id="loading">
+            <p>正在加载中...</p>
+            <div class="spinner"></div>
+        </div>
+        
+        <div class="content" id="content"></div>
+    </div>
+
+    <script>
+        async function loadContent() {
+            const btn = document.querySelector('.btn');
+            const loading = document.getElementById('loading');
+            const content = document.getElementById('content');
+            
+            btn.style.display = 'none';
+            loading.style.display = 'block';
+            
+            try {
+                // 通过代理获取网站内容
+                const response = await fetch('/.netlify/functions/proxy');
+                const html = await response.text();
+                
+                loading.style.display = 'none';
+                content.style.display = 'block';
+                content.innerHTML = html;
+                
+                // 修复相对路径
+                const links = content.querySelectorAll('link[href], script[src], img[src]');
+                links.forEach(link => {
+                    const attr = link.href ? 'href' : 'src';
+                    const url = link.getAttribute(attr);
+                    if (url && !url.startsWith('http') && !url.startsWith('//')) {
+                        link.setAttribute(attr, `/.netlify/functions/proxy?path=${encodeURIComponent(url)}`);
+                    }
+                });
+                
+            } catch (error) {
+                loading.style.display = 'none';
+                content.style.display = 'block';
+                content.innerHTML = `
+                    <div style="color: #ff6b6b; text-align: center;">
+                        <h3>加载失败</h3>
+                        <p>无法连接到服务器，请稍后重试</p>
+                        <button class="btn" onclick="location.reload()">重新尝试</button>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

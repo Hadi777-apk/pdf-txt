@@ -1,0 +1,35 @@
+{
+  "bioTextLines": [
+    "嗨！我是 Wang Jian（王俭），21岁的自学开发者",
+    "专注于 DevOps 工程和自动化，目标是成为"最强程序员"",
+    "热衷于 Linux 服务器维护、Docker 容器化和 Python 自动化",
+    "对 AI 技术和系统优化充满热情，持续探索技术边界"
+  ],
+  "ps1_hostname": "WangJian",
+  "ps1_username": "root",
+  "repo": "https://github.com/YOUR_USERNAME",
+  "social": {
+    "github": "YOUR_USERNAME",
+    "email": "your.email@example.com"
+  },
+  "commands": [
+    {
+      "name": "skills",
+      "description": "显示我的技术技能栈",
+      "usage": "skills",
+      "output": "🛠️ 技能栈：\n\n• Linux - 服务器管理与维护\n• Docker - 容器化部署\n• Nginx - Web 服务器配置\n• Python - 自动化脚本开发\n• Traffic Analysis - 网络流量分析"
+    },
+    {
+      "name": "projects",
+      "description": "查看我的项目经验",
+      "usage": "projects",
+      "output": "📦 项目经验：\n\n🔧 Qinglong Auto-Watchdog\n一个自动监控和修复青龙面板内存泄漏的 Python 脚本\n• 自动检测内存使用情况\n• 智能重启服务避免 OOM\n• 保持系统稳定运行"
+    },
+    {
+      "name": "services",
+      "description": "我提供的技术服务",
+      "usage": "services",
+      "output": "💼 技术服务：\n\n🚨 Server Rescue (CPU/OOM fix)\n   服务器紧急救援，解决 CPU 占用和内存溢出问题\n\n⚙️ Script Setup\n   自动化脚本配置与部署\n\n🌐 Environment Deployment\n   完整的开发/生产环境部署服务"
+    }
+  ]
+}

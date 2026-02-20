@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>闲鱼价格助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .result {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .price-tag {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .tip {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .comparison-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-item.opportunity {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .badge-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        #comparisonList {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ 闲鱼价格助手</h1>
+        
+        <!-- 卖出定价工具 -->
+        <div class="card">
+            <h2>📤 快速卖出定价工具</h2>
+            <div class="form-group">
+                <label>商品名称</label>
+                <input type="text" id="productName" placeholder="例如：iPhone 13 Pro 256G">
+            </div>
+            <div class="form-group">
+                <label>市场平均价格（元）</label>
+                <input type="number" id="marketPrice" placeholder="例如：4500">
+            </div>
+            <div class="form-group">
+                <label>商品成色</label>
+                <select id="condition">
+                    <option value="0.95">全新未拆封</option>
+                    <option value="0.90">99新</option>
+                    <option value="0.85">95新</option>
+                    <option value="0.80">9成新</option>
+                    <option value="0.75">8成新</option>
+                    <option value="0.70">7成新或以下</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>期望卖出时间</label>
+                <select id="urgency">
+                    <option value="0.85">1天内（急售）</option>
+                    <option value="0.90">3天内</option>
+                    <option value="0.95">1周内</option>
+                    <option value="1.00">2周内（不急）</option>
+                </select>
+            </div>
+            <button onclick="calculateSellPrice()">💰 计算建议售价</button>
+            
+            <div id="sellResult" class="result">
+                <h3>建议售价</h3>
+                <div class="price-tag" id="suggestedPrice"></div>
+                <div id="sellTips"></div>
+            </div>
+        </div>
+        
+        <!-- 低买高卖工具 -->
+        <div class="card">
+            <h2>📥 低买高卖机会分析</h2>
+            <div class="form-group">
+                <label>商品类别</label>
+                <input type="text" id="category" placeholder="例如：手机、电脑、相机">
+            </div>
+            <div class="form-group">
+                <label>市场参考价（元）</label>
+                <input type="number" id="refPrice" placeholder="例如：3000">
+            </div>
+            <button onclick="addComparison()">➕ 添加对比商品</button>
+            
+            <div style="margin-top: 20px;">
+                <h3>商品对比列表</h3>
+                <div id="comparisonList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let comparisonItems = [];
+        
+        function calculateSellPrice() {
+            const productName = document.getElementById('productName').value;
+            const marketPrice = parseFloat(document.getElementById('marketPrice').value);
+            const condition = parseFloat(document.getElementById('condition').value);
+            const urgency = parseFloat(document.getElementById('urgency').value);
+            
+            if (!productName || !marketPrice) {
+                alert('请填写商品名称和市场价格');
+                return;
+            }
+            
+            // 计算建议价格
+            const basePrice = marketPrice * condition * urgency;
+            const minPrice = basePrice * 0.95;
+            const maxPrice = basePrice * 1.05;
+            
+            // 显示结果
+            const resultDiv = document.getElementById('sellResult');
+            const priceDiv = document.getElementById('suggestedPrice');
+            const tipsDiv = document.getElementById('sellTips');
+            
+            priceDiv.textContent = `¥${Math.round(basePrice)}`;
+            
+            let tips = `
+                <div class="tip">
+                    <strong>💡 定价建议：</strong><br>
+                    • 建议价格区间：¥${Math.round(minPrice)} - ¥${Math.round(maxPrice)}<br>
+                    • 市场价格：¥${marketPrice}<br>
+                    • 折扣率：${Math.round((basePrice/marketPrice)*100)}%<br><br>
+                    <strong>📝 销售技巧：</strong><br>
+            `;
+            
+            if (urgency <= 0.85) {
+                tips += `• 急售策略：价格已经很有竞争力，建议在标题加"急售"、"包邮"等关键词<br>`;
+                tips += `• 可以考虑"送配件"来增加吸引力<br>`;
+            } else if (urgency <= 0.95) {
+                tips += `• 正常销售：价格合理，拍好照片，详细描述商品状况<br>`;
+            } else {
+                tips += `• 不急出售：可以稍微提高价格，等待合适买家<br>`;
+            }
+            
+            tips += `• 建议上传至少6张清晰照片<br>`;
+            tips += `• 及时回复买家咨询，提高成交率<br>`;
+            tips += `</div>`;
+            
+            tipsDiv.innerHTML = tips;
+            resultDiv.classList.add('show');
+        }
+        
+        function addComparison() {
+            const category = document.getElementById('category').value;
+            const refPrice = parseFloat(document.getElementById('refPrice').value);
+            
+            if (!category || !refPrice) {
+                alert('请填写商品类别和参考价格');
+                return;
+            }
+            
+            // 模拟添加商品（实际使用时需要手动输入）
+            const itemName = prompt('输入商品名称：');
+            const itemPrice = parseFloat(prompt('输入商品价格：'));
+            
+            if (!itemName || !itemPrice) return;
+            
+            const discount = ((refPrice - itemPrice) / refPrice * 100).toFixed(1);
+            const isOpportunity = discount >= 10;
+            
+            const item = {
+                name: itemName,
+                price: itemPrice,
+                refPrice: refPrice,
+                discount: discount,
+                isOpportunity: isOpportunity
+            };
+            
+            comparisonItems.push(item);
+            renderComparisonList();
+        }
+        
+        function renderComparisonList() {
+            const listDiv = document.getElementById('comparisonList');
+            
+            if (comparisonItems.length === 0) {
+                listDiv.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">暂无对比商品</p>';
+                return;
+            }
+            
+            // 按折扣率排序
+            comparisonItems.sort((a, b) => b.discount - a.discount);
+            
+            let html = '';
+            comparisonItems.forEach((item, index) => {
+                const opportunityClass = item.isOpportunity ? 'opportunity' : '';
+                const badge = item.isOpportunity ? 
+                    '<span class="badge badge-success">💎 值得买</span>' : 
+                    '<span class="badge badge-warning">观望</span>';
+                
+                html += `
+                    <div class="comparison-item ${opportunityClass}">
+                        <strong>${item.name}</strong> ${badge}
+                        <div style="margin-top: 10px;">
+                            <span style="color: #666;">售价：</span>
+                            <span style="font-size: 1.2em; color: #667eea; font-weight: bold;">¥${item.price}</span>
+                            <span style="color: #666; margin-left: 15px;">参考价：¥${item.refPrice}</span>
+                        </div>
+                        <div style="margin-top: 5px; color: ${item.discount >= 10 ? '#28a745' : '#666'};">
+                            ${item.discount >= 0 ? '低于' : '高于'}市场价 ${Math.abs(item.discount)}%
+                        </div>
+                        ${item.isOpportunity ? '<div style="margin-top: 5px; color: #28a745; font-weight: bold;">✅ 建议购买，有利润空间</div>' : ''}
+                        <button onclick="removeItem(${index})" style="width: auto; padding: 5px 15px; margin-top: 10px; background: #dc3545;">删除</button>
+                    </div>
+                `;
+            });
+            
+            listDiv.innerHTML = html;
+        }
+        
+        function removeItem(index) {
+            comparisonItems.splice(index, 1);
+            renderComparisonList();
+        }
+        
+        // 初始化
+        renderComparisonList();
+    </script>
+</body>
+</html>

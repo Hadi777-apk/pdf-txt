@@ -1,0 +1,11 @@
+{
+  "extract_key_info": true,
+  "max_keywords": 10,
+  "summary_max_length": 200,
+  "default_output_format": "text",
+  "output_encoding": "utf-8",
+  "show_progress_threshold": 5,
+  "log_level": "WARNING",
+  "log_to_file": false,
+  "log_file_path": "pdf_extractor.log"
+}

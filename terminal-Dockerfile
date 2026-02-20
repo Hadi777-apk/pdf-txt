@@ -1,0 +1,34 @@
+# 构建阶段
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# 复制 package 文件
+COPY package*.json ./
+
+# 安装依赖
+RUN npm install
+
+# 复制源码
+COPY . .
+
+# 构建项目
+RUN npm run build
+
+# 运行阶段
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 从构建阶段复制构建产物
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+
+# 安装生产依赖（包括 vite 用于 preview）
+RUN npm install --production && npm install vite
+
+# 暴露端口
+EXPOSE 3000
+
+# 启动应用（使用 vite preview）
+CMD ["npx", "vite", "preview", "--host", "0.0.0.0", "--port", "3000"]

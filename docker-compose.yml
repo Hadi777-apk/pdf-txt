@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  qinglong:
+    image: whyour/qinglong:latest
+    container_name: qinglong
+    restart: always
+    ports:
+      - "5700:5700"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - qinglong_data:/ql/data
+      - qinglong_scripts:/ql/scripts
+      - qinglong_repo:/ql/repo
+      - qinglong_log:/ql/log
+    networks:
+      - qinglong_net
+
+volumes:
+  qinglong_data:
+  qinglong_scripts:
+  qinglong_repo:
+  qinglong_log:
+
+networks:
+  qinglong_net:
+    driver: bridge

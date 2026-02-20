@@ -1,0 +1,1 @@
+"""Test suite for website accessibility fix tool."""
